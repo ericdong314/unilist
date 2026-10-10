@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'catalog.apps.CatalogConfig',
     'todolist.apps.TodolistConfig',
     'klipper.apps.KlipperConfig',
+    'acc.apps.AccConfig',
 ]
 
 MIDDLEWARE = [
@@ -90,6 +91,8 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+AUTH_USER_MODEL = 'acc.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
