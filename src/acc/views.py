@@ -17,7 +17,7 @@ LOGGED_IN_REDIRECT = 'todolist:home'
 
 @require_POST
 def send_login_email(request):
-    email = request.POST.get('email', '').strip()
+    email = request.POST.get('email', '').strip().lower()
     try:
         validate_email(email)
     except ValidationError:

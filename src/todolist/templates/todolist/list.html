@@ -1,17 +1,68 @@
 {% extends 'todolist/base.html' %}
 
+{% block title %}{{ list.name }} - To-Do lists{% endblock %}
+
 {% block header_text %}Your To-Do lists{% endblock %}
 
 {% block form_action %}{% url 'todolist:view_list' list.id %}{% endblock %}
 
 {% block table %}
-    <table class="table" id="id_list_table">
+    <table class="table align-middle" id="id_list_table">
         {% for item in list.item_set.all %}
-            <tr>
-                <td>{{ forloop.counter }}: {{ item.text }}</td>
+            <tr class="{% if item.done %}item-done{% endif %}">
+                <td style="width: 2.5rem">
+                    <form method="post" action="{% url 'todolist:toggle_item' item.id %}">
+                        {% csrf_token %}
+                        <input type="checkbox"
+                               class="form-check-input item-toggle"
+                               aria-label="Mark as {% if item.done %}not done{% else %}done{% endif %}"
+                               onchange="this.form.submit()"
+                               {% if item.done %}checked{% endif %}>
+                    </form>
+                </td>
+                <td>
+                    {% if item.done %}<s class="text-body-secondary">{% endif %}{{ forloop.counter }}: {{ item.text }}{% if item.done %}</s>{% endif %}
+                </td>
+                <td class="text-end" style="width: 2.5rem">
+                    <form method="post" action="{% url 'todolist:delete_item' item.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-close item-delete" aria-label="Delete item"></button>
+                    </form>
+                </td>
             </tr>
         {% empty %}
             There are no items yet.
         {% endfor %}
     </table>
+
+    {% if list.owner %}
+        <p class="text-body-secondary" id="id_list_owner">List owner: {{ list.owner.email }}</p>
+    {% endif %}
+
+    {% if list.shared_with.exists %}
+        <h2 class="h5">Shared with</h2>
+        <ul class="list-unstyled" id="id_shared_with">
+            {% for sharee in list.shared_with.all %}
+                <li class="list-sharee">{{ sharee.email }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if is_owner %}
+        <form method="post" action="{% url 'todolist:share_list' list.id %}" class="mt-4" id="id_share_form">
+            {% csrf_token %}
+            <label class="form-label" for="id_sharee">Share this list</label>
+            <div class="input-group">
+                <input id="id_sharee" name="sharee" type="email" class="form-control"
+                       placeholder="your-friend@example.com" required>
+                <button type="submit" class="btn btn-outline-primary">Share</button>
+            </div>
+        </form>
+
+        <form method="post" action="{% url 'todolist:delete_list' list.id %}" class="mt-4"
+              onsubmit="return confirm('Delete this list and all its items?');">
+            {% csrf_token %}
+            <button type="submit" id="id_delete_list" class="btn btn-outline-danger btn-sm">Delete list</button>
+        </form>
+    {% endif %}
 {% endblock %}

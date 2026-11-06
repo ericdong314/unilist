@@ -26,3 +26,10 @@ class ExistingListItemForm(ItemForm):
 
     def save(self):
         return super().save(for_list=self._list)
+
+
+class ShareListForm(forms.Form):
+    sharee = forms.EmailField()
+
+    def clean_sharee(self):
+        return self.cleaned_data['sharee'].strip().lower()

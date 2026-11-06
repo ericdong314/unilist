@@ -16,4 +16,16 @@
             <li class="list-group-item">You don't have any lists yet.</li>
         {% endfor %}
     </ul>
+
+    {% if shared_lists %}
+        <h2 class="h4 mt-4">Shared with me</h2>
+        <ul class="list-group" id="id_shared_lists">
+            {% for list in shared_lists %}
+                <li class="list-group-item">
+                    <a href="{{ list.get_absolute_url }}">{{ list.name }}</a>
+                    <span class="text-body-secondary">({{ list.owner.email }})</span>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
 {% endblock %}

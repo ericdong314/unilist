@@ -49,6 +49,10 @@ class SendLoginEmailViewTest(TestCase):
         self.post(email=f"  {TEST_EMAIL}  ")
         self.assertEqual(Token.objects.get().email, TEST_EMAIL)
 
+    def test_lowercases_email(self):
+        self.post(email="Edith@Example.COM")
+        self.assertEqual(Token.objects.get().email, TEST_EMAIL)
+
     def test_adds_success_message(self):
         response = self.post(follow=True)
         [message] = list(response.context["messages"])
