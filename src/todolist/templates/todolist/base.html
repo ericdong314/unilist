@@ -2,7 +2,7 @@
 <!doctype html>
 <html lang="en" data-bs-theme="dark">
 <head>
-    <title>To-Do lists</title>
+    <title>{% block title %}To-Do lists{% endblock %}</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -13,23 +13,48 @@
 
     <nav class="navbar">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">UniList</a>
-            <form method="post" action="/acc/send_login_email">
-                <div class="input-group">
-                    <label class="navbar-text me-2" for="id_email_input">
-                        Enter your email to log in
-                    </label>
-                    <input
-                            id="id_email_input"
-                            name="email"
-                            class="form-control"
-                            placeholder="your@email.com"
-                    />
-                    {% csrf_token %}
+            <a class="navbar-brand" href="{% url 'todolist:home' %}">UniList</a>
+            {% if user.is_authenticated %}
+                <div class="d-flex align-items-center">
+                    <a class="nav-link me-3" id="id_my_lists" href="{% url 'todolist:my_lists' %}">My lists</a>
+                    <span class="navbar-text me-3">Logged in as {{ user.email }}</span>
+                    <form method="post" action="{% url 'acc:logout' %}">
+                        {% csrf_token %}
+                        <button id="id_logout" type="submit" class="btn btn-outline-secondary">Log out</button>
+                    </form>
                 </div>
-            </form>
+            {% else %}
+                <form method="post" action="{% url 'acc:send_login_email' %}">
+                    <div class="input-group">
+                        <label class="navbar-text me-2" for="id_email_input">
+                            Enter your email to log in
+                        </label>
+                        <input
+                                id="id_email_input"
+                                name="email"
+                                type="email"
+                                class="form-control"
+                                placeholder="your@email.com"
+                                required
+                        />
+                        {% csrf_token %}
+                    </div>
+                </form>
+            {% endif %}
         </div>
     </nav>
+
+    {% if messages %}
+        <div class="row">
+            <div class="col-md-12">
+                {% for message in messages %}
+                    <div class="alert {% if message.level_tag == 'error' %}alert-danger{% else %}alert-{{ message.level_tag }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 
 
     <div class="row justify-content-center p-5 bg-body-tertiary rounded-3">

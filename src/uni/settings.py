@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
+from datetime import timedelta
 from pathlib import Path
 
 
@@ -93,6 +94,12 @@ DATABASES = {
 }
 
 AUTH_USER_MODEL = 'acc.User'
+AUTHENTICATION_BACKENDS = [
+    'acc.authentication.PasswordlessAuthenticationBackend',
+]
+
+# How long a magic login link stays valid.
+LOGIN_TOKEN_MAX_AGE = timedelta(hours=1)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

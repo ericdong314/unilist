@@ -7,6 +7,7 @@ from django.utils import html
 from django.urls import reverse
 
 from todolist.forms import EMPTY_ITEM_ERROR, DUPLICATE_ITEM_ERROR
+from acc.models import User
 from todolist.models import List, Item
 
 
@@ -148,3 +149,65 @@ class ListViewTest(TestCase):
         response = self.try_to_create_a_duplicate_item()
         expected_error = html.escape(DUPLICATE_ITEM_ERROR)
         self.assertContains(response, expected_error)
+
+
+class ListViewNotFoundTest(TestCase):
+    def test_missing_list_returns_404(self):
+        response = self.client.get('/todo/lists/999/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_post_to_missing_list_returns_404(self):
+        response = self.client.post('/todo/lists/999/', data={'text': 'x'})
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(Item.objects.count(), 0)
+
+
+class NewListOwnershipTest(TestCase):
+    def test_get_not_allowed(self):
+        response = self.client.get('/todo/lists/new/')
+        self.assertEqual(response.status_code, 405)
+
+    def test_list_owner_is_saved_if_user_is_authenticated(self):
+        user = User.objects.create(email='a@b.com')
+        self.client.force_login(user)
+        self.client.post('/todo/lists/new/', data={'text': 'new item'})
+        self.assertEqual(List.objects.get().owner, user)
+
+    def test_list_has_no_owner_if_user_is_anonymous(self):
+        self.client.post('/todo/lists/new/', data={'text': 'new item'})
+        self.assertIsNone(List.objects.get().owner)
+
+
+class MyListsTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(email='a@b.com')
+
+    def test_redirects_anonymous_user_to_home(self):
+        response = self.client.get('/todo/lists/mine/')
+        self.assertRedirects(response, '/todo/')
+
+    def test_uses_my_lists_template(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/todo/lists/mine/')
+        self.assertTemplateUsed(response, 'todolist/my_lists.html')
+
+    def test_shows_only_the_users_own_lists(self):
+        mine = List.objects.create(owner=self.user)
+        Item.objects.create(text='my item', list=mine)
+        theirs = List.objects.create(owner=User.objects.create(email='x@y.com'))
+        Item.objects.create(text='their item', list=theirs)
+        self.client.force_login(self.user)
+        response = self.client.get('/todo/lists/mine/')
+        self.assertContains(response, 'my item')
+        self.assertContains(response, mine.get_absolute_url())
+        self.assertNotContains(response, 'their item')
+
+    def test_shows_message_when_no_lists(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/todo/lists/mine/')
+        self.assertContains(response, "You don't have any lists yet.")
+
+    def test_navbar_links_to_my_lists_when_logged_in(self):
+        self.client.force_login(self.user)
+        response = self.client.get('/todo/')
+        self.assertContains(response, 'href="/todo/lists/mine/"')

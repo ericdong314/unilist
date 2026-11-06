@@ -1,0 +1,19 @@
+{% extends 'todolist/base.html' %}
+
+{% block title %}My lists{% endblock %}
+
+{% block header_text %}My lists{% endblock %}
+
+{% block form_action %}{% url 'todolist:new_list' %}{% endblock %}
+
+{% block table %}
+    <ul class="list-group mt-4" id="id_my_lists_list">
+        {% for list in lists %}
+            <li class="list-group-item">
+                <a href="{{ list.get_absolute_url }}">{{ list.name }}</a>
+            </li>
+        {% empty %}
+            <li class="list-group-item">You don't have any lists yet.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
