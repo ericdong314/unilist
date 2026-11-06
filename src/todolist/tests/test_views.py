@@ -211,3 +211,9 @@ class MyListsTest(TestCase):
         self.client.force_login(self.user)
         response = self.client.get('/todo/')
         self.assertContains(response, 'href="/todo/lists/mine/"')
+
+
+class RootUrlTest(TestCase):
+    def test_root_redirects_to_todo_home(self):
+        response = self.client.get('/')
+        self.assertRedirects(response, '/todo/', status_code=302)

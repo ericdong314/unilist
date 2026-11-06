@@ -43,10 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Add our new app
-    'catalog.apps.CatalogConfig',
     'todolist.apps.TodolistConfig',
-    'klipper.apps.KlipperConfig',
     'acc.apps.AccConfig',
 ]
 
@@ -65,7 +62,7 @@ ROOT_URLCONF = 'uni.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -141,7 +138,6 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/'
 
 # log emails sent to the console.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

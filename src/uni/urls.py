@@ -1,19 +1,4 @@
-"""
-URL configuration for uni project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+"""URL configuration for uni project."""
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import RedirectView
@@ -21,9 +6,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('acc/', include('acc.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('catalog/', include('catalog.urls')),
     path('todo/', include('todolist.urls')),
-    path('klipper/', include('klipper.urls')),
-    path('', RedirectView.as_view(url='catalog/', permanent=True)),
+    # Not permanent, so browsers don't cache it if the landing page changes again.
+    path('', RedirectView.as_view(pattern_name='todolist:home', permanent=False)),
 ]
