@@ -140,7 +140,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # log emails sent to the console.
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Sending emails
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "unilistx@gmail.com"
+EMAIL_HOST_PASSWORD = os.environ.get("DJANGO_EMAIL_PASSWORD")
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
 LOGGING = {
     "version": 1,
