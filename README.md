@@ -1,7 +1,7 @@
 # UniList
 
 UniList is a web-based to do list app built with Django. Create lists, track items, and share lists with other people. Users sign in with a time-limited email link.
-
+![screenshot.png](screenshot.png)
 ## Features
 
 - Create lists and add, complete, or remove items.
